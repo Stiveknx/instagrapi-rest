@@ -10,8 +10,11 @@ router = APIRouter(
 )
 
 
-def challenge_code_handler(username, choice, challenge_url, session):
+def challenge_code_handler(username, choice, challenge_url,  session=None):
     # Aqui salva o challenge_url e os headers e os cookies que tão nessa session
+    print(f"username:{username} \n CHOICE:{choice}")
+    print(f"URL:{challenge_url} \n session {session}")
+
     return False
 
 @router.post("/login")
@@ -67,9 +70,10 @@ async def challenge_code(sessionid: str = Form(...),
     ## Aqui você puxa os headers, os cookies e o challenge_url que você salvou na linha 14 e chama o checkpoint_resume
     old_session = ""
     challenge_url = ""
-    if(old_session) 
+
+    if(old_session):
         result = cl.resume_checkpoint(code, challenge_url, old_session)
-    else
+    else:
         result = cl.send_checkpoint_code(code, challenge_url)
     return result
 
