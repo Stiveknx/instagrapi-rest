@@ -17,9 +17,19 @@ def handle_exception(client, e):
     if isinstance(e, ChallengeRequired):
         print("------ Challenge required \n\n")
         api_path = client.last_json['challenge']['api_path']
-        client.set_challenge_url(api_path);
-        print(client.get_settings());
-
+        user_id  = client.last_json['challenge']['user_id']
+        settings = client.get_settings();
+        settings.challenge_url = api_path
+        # Vamos salvar as configurações do usuário que iniciou o challenge
+        clients: ClientStorage = Depends(get_clients)
+        cl = clients.client()
+        cl.set_settings(json.loads(settings))
+        # Mock an session ID
+        sessionid = user_id + ":challenge_required"
+        cl.sessionid = sessionid
+        # aqui ele vai salvar no tinydb
+        clients.set(cl)
+        
     return True
 
 @router.post("/login")
@@ -78,12 +88,9 @@ async def challenge_code(sessionid: str = Form(...),
     cl = clients.get(sessionid)
     
     ## Aqui você puxa os headers, os cookies e o challenge_url que você salvou na linha 14 e chama o checkpoint_resume
-    old_session = ""
-    challenge_url = ""
-    if(old_session):
-        result = cl.resume_checkpoint(code, challenge_url, old_session)
-    else:
-        result = cl.send_checkpoint_code(code, challenge_url)
+    settings = cl.get_settings()
+    challenge_url = settings.challenge_url
+    result = cl.send_checkpoint_code(code, challenge_url)
     return result
 
 
