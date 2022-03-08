@@ -18,17 +18,19 @@ def handle_exception(client, e):
         print("------ Challenge required \n\n")
         api_path = client.last_json['challenge']['api_path']
         user_id  = client.last_json['challenge']['user_id']
-        settings = client.get_settings();
+        settings = client.get_settings()
         settings.challenge_url = api_path
+
         # Vamos salvar as configurações do usuário que iniciou o challenge
-        clients: ClientStorage = Depends(get_clients)
+        clients = ClientStorage()
         cl = clients.client()
-        cl.set_settings(json.loads(settings))
+
         # Mock an session ID
         sessionid = user_id + ":challenge_required"
         cl.sessionid = sessionid
+
         # aqui ele vai salvar no tinydb
-        clients.set(cl)
+        clients.set_custom(cl)
         
     return True
 
@@ -42,7 +44,6 @@ async def auth_login(username: str = Form(...),
                      clients: ClientStorage = Depends(get_clients)) -> str:
     """Login by username and password with 2FA
     """
-
     
     cl = clients.client()
    
