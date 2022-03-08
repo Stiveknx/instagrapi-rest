@@ -36,12 +36,9 @@ class ClientStorage:
         self.db.insert(Document({'sessionid': key, 'settings': json.dumps(cl.get_settings())}, doc_id=user_pkid))
         return True
 
-    def set_custom(self, cl: Client, settings) -> bool:
+    def set_custom(self, user_pkid, settings) -> bool:
         """Set client settings
         """
-        key = parse.unquote(cl.sessionid.strip(" \""))
-        user_pkid = key.split(":")[0]
-
         self.db.insert(Document({'sessionid': key, 'settings': settings}, doc_id=user_pkid))
         return True
 
