@@ -1,6 +1,7 @@
 from urllib import parse
 from instagrapi import Client
 from tinydb import TinyDB, Query
+from tinydb.table import Document
 import json
 
 class ClientStorage:
