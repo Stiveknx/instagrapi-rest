@@ -25,12 +25,8 @@ def handle_exception(client, e):
         clients = ClientStorage()
         cl = clients.client()
 
-        # Mock an session ID
-        sessionid = user_id + ":challenge_required"
-        cl.sessionid = sessionid
-
         # aqui ele vai salvar no tinydb
-        clients.set_custom(cl)
+        clients.set_custom(user_id, settings)
         
     return True
 
