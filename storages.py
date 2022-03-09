@@ -39,8 +39,18 @@ class ClientStorage:
     def set_custom(self, user_pkid, settings) -> bool:
         """Set client settings
         """
-        self.db.insert(Document({'sessionid': key, 'settings': settings}, doc_id=user_pkid))
-        return True
+        
+        # gera randomico o doc_id
+        import random
+        random.seed(user_pkid)
+        id_doc_rand = random.randrange(10000, 99999)
+
+        self.db.insert(Document(
+            {'sessionid': "", 'settings': settings},
+            doc_id=id_doc_rand))
+
+        # retornar para encontrar esse elemento no banco de dados depois ?
+        return id_doc_rand
 
     def close(self):
         pass
