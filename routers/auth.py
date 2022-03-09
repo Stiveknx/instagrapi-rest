@@ -16,18 +16,17 @@ router = APIRouter(
 def handle_exception(client, e):
     if isinstance(e, ChallengeRequired):
         print("------ Challenge required \n\n")
+
         api_path = client.last_json['challenge']['api_path']
-        user_id  = client.last_json['challenge']['user_id']
-        settings = client.get_settings()
-        settings.challenge_url = api_path
+        
+        user_id = json.loads(client.last_json['challenge']['challenge_context'])['user_id']
+        settings = client.get_settings();
+        settings['challenge_url'] = api_path
 
         # Vamos salvar as configurações do usuário que iniciou o challenge
         clients = ClientStorage()
-        cl = clients.client()
+        idHandle = clients.set_custom(user_id, settings)
 
-        # aqui ele vai salvar no tinydb
-        clients.set_custom(user_id, settings)
-        
     return True
 
 @router.post("/login")
