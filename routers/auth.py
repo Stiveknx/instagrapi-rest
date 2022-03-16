@@ -2,17 +2,26 @@ import json
 from typing import Optional, Dict
 from fastapi import APIRouter, Depends, Form
 from dependencies import ClientStorage, get_clients
-
+from instagrapi.exceptions import (
+    ChallengeRequired
+)
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
     responses={404: {"description": "Not found"}}
 )
 
+class Challenge_code():
+    default_challenge_code = 1234
+
+def challenge_code_handler(username: str, choice=None):
+    return Challenge_code.default_challenge_code
+
 @router.post("/login")
 async def auth_login(username: str = Form(...),
                      password: str = Form(...),
                      verification_code: Optional[str] = Form(""),
+                     challenge_code: Optional[str] = Form(""),
                      proxy: Optional[str] = Form(""),
                      locale: Optional[str] = Form(""),
                      timezone: Optional[str] = Form(""),
@@ -28,6 +37,11 @@ async def auth_login(username: str = Form(...),
 
     if timezone != "":
         cl.set_timezone_offset(timezone)
+
+    if challenge_code != "":
+        Challenge_code.default_challenge_code = challenge_code
+
+    cl.challenge_code_handler = challenge_code_handler
 
     result = cl.login(
         username,
