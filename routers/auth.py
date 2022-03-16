@@ -2,9 +2,7 @@ import json
 from typing import Optional, Dict
 from fastapi import APIRouter, Depends, Form
 from dependencies import ClientStorage, get_clients
-from instagrapi.exceptions import (
-    ChallengeRequired
-)
+
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
