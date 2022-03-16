@@ -1,6 +1,7 @@
 from urllib import parse
 from instagrapi import Client
 from tinydb import TinyDB, Query
+from tinydb.table import Document
 import json
 
 class ClientStorage:
@@ -30,7 +31,15 @@ class ClientStorage:
         """Set client settings
         """
         key = parse.unquote(cl.sessionid.strip(" \""))
-        self.db.insert({'sessionid': key, 'settings': json.dumps(cl.get_settings())})
+        user_pkid = key.split(":")[0]
+
+        self.db.insert(Document({'sessionid': key, 'settings': json.dumps(cl.get_settings())}, doc_id=user_pkid))
+        return True
+
+    def set_custom(self, user_pkid, settings) -> bool:
+        """Set client settings
+        """
+        self.db.insert(Document({'sessionid': key, 'settings': settings}, doc_id=user_pkid))
         return True
 
     def close(self):
